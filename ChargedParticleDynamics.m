@@ -1,17 +1,17 @@
 %Charged particle dynamics
 
-m_e = 1;           %mass of negatively charged particle in kg
-max_v_e = 0.0;     %maximum component velocity for negatively charged part.
+m_e = 1;            %mass of negatively charged particle in kg
+max_v_e = 0.0;      %maximum component velocity for negatively charged part.
 m_p = 1;            %mass of positively charged particle in kg
-Np = 0;
-Ne = 100;
-k = 1000;
-Qe = -1;
-Qp = 1;
-L = 50;
-writevideo = true;
-max_t = 7.5;
-dt = 0.001;
+Np = 3;             %number of positively charged particles
+Ne = 100;           %number of negatively charged particles
+k = 1000;           %proportionality constant in Coulomb's law
+Qe = -1;            %negative charge
+Qp = 1;             %positive charge
+L = 50;             %size domain
+writevideo = true;  %write to video guard
+max_t = 5;          %max simulation time
+dt = 0.001;         %time step size
 
 %Initialization
 err = 1e-8;
@@ -32,13 +32,14 @@ South_wall = 4;
 v_x_e = 2*max_v_e*rand(Ne,1) - max_v_e;
 v_y_e = 2*max_v_e*rand(Ne,1) - max_v_e;
 
+%Initalize positions of particles
 X_p = 2*L*rand(Np,1) - L;
 Y_p = 2*L*rand(Np,1) - L;
 
 X_e = 2*L*rand(Ne,1) - L;
 Y_e = 2*L*rand(Ne,1) - L;
 
-frameps = 96;
+frameps = 48;
 if writevideo==true
     writerObj = VideoWriter('C:\Users\d-w-h\Desktop\Home\Particle_dynamics.avi','Motion JPEG AVI');
     writerObj.FrameRate = frameps;
@@ -49,7 +50,6 @@ end
 t = 0;
 frame_counter = 0;
 while t < max_t
- 
     %Check collision times with boundary
     coll_time = 1e+30;
     coll_partner_1 = 0;
@@ -149,8 +149,7 @@ while t < max_t
                 v_y_e(coll_partner_1) = -v_y_e(coll_partner_1);
             end            
         end
-        
-        
+                
         Fe = zeros(2, Ne);
         %Calculate force acting on negatively charged particles
         for n_e = 1:Ne
@@ -269,11 +268,10 @@ while t < max_t
         end         
     end
     
-    dummy = floor(t/(2*dt));
-    if frame_counter == dummy
+    if frame_counter == floor(t/(2*dt))
         frame_counter = frame_counter + 1;
         plot(X_e, Y_e, 'r.', 'MarkerSize', 10)
-        hold on
+        hold on        
         plot(X_p, Y_p, 'b.', 'MarkerSize', 10)
         hold off
 
