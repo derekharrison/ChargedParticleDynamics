@@ -39,6 +39,7 @@ Y_p = 2*L*rand(Np,1) - L;
 X_e = 2*L*rand(Ne,1) - L;
 Y_e = 2*L*rand(Ne,1) - L;
 
+%Generate video of simulation
 frameps = 48;
 if writevideo==true
     writerObj = VideoWriter('C:\Users\d-w-h\Desktop\Home\Particle_dynamics.avi','Motion JPEG AVI');
@@ -46,7 +47,7 @@ if writevideo==true
     open(writerObj);
 end
 
-
+%Start simulation loop
 t = 0;
 frame_counter = 0;
 while t < max_t
@@ -56,7 +57,7 @@ while t < max_t
     coll_partner_2 = 0;
     collision_with_p = false;
     
-    %Checking collision time between wall and positively charged particle
+    %Checking collision time between walls and positively charged particle
     for n = 1:Np   
         coll_time_east = (L - X_p(n)) / v_x_p(n);
         if coll_time >= coll_time_east && coll_time_east > 0
@@ -91,7 +92,7 @@ while t < max_t
         end            
     end
     
-    %Checking collision time between wall and negatively charged particle
+    %Checking collision time between walls and negatively charged particle
     for n = 1:Ne   
         coll_time_east = (L - X_e(n)) / v_x_e(n);
         if coll_time >= coll_time_east && coll_time_east > 0
@@ -126,6 +127,7 @@ while t < max_t
         end            
     end    
     
+    %Updating particle velocities and positions
     if coll_time < dt
         X_p = v_x_p * coll_time * (1 - err) + X_p;
         Y_p = v_y_p * coll_time * (1 - err) + Y_p;
@@ -150,8 +152,8 @@ while t < max_t
             end            
         end
                 
-        Fe = zeros(2, Ne);
         %Calculate force acting on negatively charged particles
+        Fe = zeros(2, Ne);
         for n_e = 1:Ne
             %Calculating force on e particle due to p particles
             for n_p = 1:Np
@@ -171,8 +173,8 @@ while t < max_t
             end            
         end
         
-        Fp = zeros(2, Np);
         %Calculate force acting on positively charged particles
+        Fp = zeros(2, Np);        
         for n_p = 1:Np
             %Calculating force on e particle due to p particles
             for n_e = 1:Ne
@@ -213,8 +215,8 @@ while t < max_t
         
         t = t + dt
         
+        %Calculate force acting on negatively charged particles        
         Fe = zeros(2, Ne);
-        %Calculate force acting on negatively charged particles
         for n_e = 1:Ne
             %Calculating force on e particle due to p particles
             for n_p = 1:Np
@@ -234,8 +236,8 @@ while t < max_t
             end            
         end
         
-        Fp = zeros(2, Np);
         %Calculate force acting on positively charged particles
+        Fp = zeros(2, Np);        
         for n_p = 1:Np
             %Calculating force on e particle due to p particles
             for n_e = 1:Ne
@@ -268,6 +270,7 @@ while t < max_t
         end         
     end
     
+    %Capture frames for video creation
     if frame_counter == floor(t/(2*dt))
         frame_counter = frame_counter + 1;
         plot(X_e, Y_e, 'r.', 'MarkerSize', 10)
@@ -286,6 +289,7 @@ while t < max_t
     end
 end
 
+%Close video writer
 if writevideo == true
     close(writerObj);
 end
